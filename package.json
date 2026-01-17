@@ -1,0 +1,21 @@
+{
+  "name": "smartwork",
+  "version": "0.1.0",
+  "description": "AI 智能体协作平台",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "cd src/frontend && npm run dev",
+    "dev:backend": "cd src/backend && python main.py",
+    "test": "pytest tests/ && cd src/frontend && npm test",
+    "build": "cd src/frontend && npm run build && electron-builder",
+    "build:mac": "cd src/frontend && npm run build:mac",
+    "build:windows": "cd src/frontend && npm run build:windows", 
+    "build:linux": "cd src/frontend && npm run build:linux"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": ["ai", "automation", "desktop", "electron"],
+  "author": "SmartWork Team",
+  "license": "MIT"
+}
