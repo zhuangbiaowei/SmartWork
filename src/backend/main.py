@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.file_system import router as file_router
+from api.tasks import router as tasks_router
 
 app = FastAPI(
     title="SmartWork API", description="AI 智能体协作平台后端 API", version="0.1.0"
@@ -15,6 +16,7 @@ app.add_middleware(
 )
 
 app.include_router(file_router, prefix="/api/files", tags=["files"])
+app.include_router(tasks_router, prefix="/api/tasks", tags=["tasks"])
 
 
 @app.get("/")

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
 from models.task import Task, TaskStatus, TaskPriority
 from llm.llm_client import LLMClient
 import json
@@ -8,6 +8,7 @@ import re
 class TaskPlanner:
     def __init__(self, llm_client: Optional[LLMClient] = None):
         self.llm_client = llm_client
+        self.tasks: Dict[str, Task] = {}
 
     async def decompose_task(self, task: Task) -> List[Task]:
         if not task.description:
@@ -163,3 +164,50 @@ class TaskPlanner:
         except Exception as e:
             print(f"解析 LLM 响应失败: {e}")
             return [Task(id=f"{parent_id}-1", description=response)]
+
+    async def plan_task(
+        self, description: str, parent_task_id: Optional[str] = None
+    ) -> Task:
+        """
+        Create and plan a new task.
+
+        Args:
+            description: Task description
+            parent_task_id: Optional parent task ID for subtasks
+
+        Returns:
+            Created task with planned subtasks
+        """
+        task = Task(id=f"task-{len(self.tasks) + 1}", description=description)
+
+        if parent_task_id and parent_task_id in self.tasks:
+            parent = self.tasks[parent_task_id]
+            parent.subtasks.append(task)
+            task.dependencies = [parent_task_id]
+        else:
+            subtasks = await self.decompose_task(task)
+            task.subtasks = subtasks
+
+        self.tasks[task.id] = task
+        return task
+
+    def get_task(self, task_id: str) -> Optional[Task]:
+        """
+        Get task by ID.
+
+        Args:
+            task_id: Task identifier
+
+        Returns:
+            Task or None if not found
+        """
+        return self.tasks.get(task_id)
+
+    def get_all_tasks(self) -> List[Task]:
+        """
+        Get all tasks.
+
+        Returns:
+            List of all tasks
+        """
+        return list(self.tasks.values())
