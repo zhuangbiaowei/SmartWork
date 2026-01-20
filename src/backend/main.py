@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.file_system import router as file_router
 from api.tasks import router as tasks_router
+from utils.performance import monitor_performance
 
 app = FastAPI(
     title="SmartWork API", description="AI 智能体协作平台后端 API", version="0.1.0"
@@ -27,9 +28,3 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
-
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=8000)
